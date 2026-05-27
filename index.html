@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Embed Hub</title>
+
+<style>
+
+/* RESET */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+
+    background:#0b0b0b;
+
+    font-family:
+    Inter,
+    Arial,
+    sans-serif;
+}
+
+/* BACKGROUND */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+    inset:0;
+
+    background:
+    radial-gradient(
+        circle at top,
+        #1d1d1d 0%,
+        #0b0b0b 60%
+    );
+
+    z-index:-2;
+}
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+    inset:0;
+
+    background:
+    linear-gradient(
+        rgba(255,255,255,0.02),
+        transparent
+    );
+
+    z-index:-1;
+
+    pointer-events:none;
+}
+
+/* HOME */
+
+#home{
+
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+
+    gap:28px;
+
+    padding:40px;
+
+    transition:
+    opacity .35s ease,
+    transform .35s ease;
+}
+
+/* CARD */
+
+.card{
+
+    width:260px;
+    height:170px;
+
+    position:relative;
+
+    border-radius:30px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,0.08),
+        rgba(255,255,255,0.03)
+    );
+
+    border:
+    1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(18px);
+
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    gap:18px;
+
+    cursor:pointer;
+
+    user-select:none;
+
+    transition:
+    transform .25s ease,
+    box-shadow .25s ease,
+    border-color .25s ease;
+}
+
+/* CARD GLOW */
+
+.card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:240px;
+    height:240px;
+
+    background:
+    radial-gradient(
+        rgba(255,255,255,0.13),
+        transparent 70%
+    );
+
+    top:-120px;
+    left:-80px;
+
+    opacity:0;
+
+    transition:opacity .25s ease;
+}
+
+.card:hover{
+
+    transform:
+    translateY(-10px)
+    scale(1.03);
+
+    border-color:
+    rgba(255,255,255,0.16);
+
+    box-shadow:
+    0 20px 45px rgba(0,0,0,.45);
+}
+
+.card:hover::before{
+    opacity:1;
+}
+
+/* ICON */
+
+.card img{
+
+    width:68px;
+    height:68px;
+
+    border-radius:20px;
+
+    padding:8px;
+
+    background:white;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.35);
+
+    transition:
+    transform .25s ease;
+}
+
+.card:hover img{
+    transform:scale(1.08);
+}
+
+/* TITLE */
+
+.card span{
+
+    color:white;
+
+    font-size:22px;
+    font-weight:600;
+
+    opacity:.95;
+}
+
+/* VIEWER */
+
+#viewer{
+
+    position:absolute;
+    inset:0;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transform:scale(1.015);
+
+    transition:
+    opacity .35s ease,
+    transform .35s ease;
+}
+
+#viewer.active{
+
+    opacity:1;
+
+    pointer-events:auto;
+
+    transform:scale(1);
+}
+
+/* IFRAME */
+
+iframe{
+
+    width:100%;
+    height:100%;
+
+    border:none;
+
+    background:black;
+}
+
+/* TOP BAR */
+
+#topBar{
+
+    position:fixed;
+
+    top:16px;
+    left:50%;
+
+    transform:
+    translateX(-50%)
+    translateY(-20px);
+
+    width:calc(100% - 32px);
+    max-width:920px;
+
+    height:68px;
+
+    border-radius:22px;
+
+    background:
+    rgba(20,20,20,.65);
+
+    border:
+    1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter:blur(18px);
+
+    display:flex;
+    align-items:center;
+
+    padding:0 14px;
+
+    z-index:9999;
+
+    opacity:0;
+
+    transition:
+    opacity .22s ease,
+    transform .22s ease;
+}
+
+#topBar.show{
+
+    opacity:1;
+
+    transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+/* LEFT SIDE */
+
+#leftSide{
+
+    display:flex;
+    align-items:center;
+
+    gap:14px;
+}
+
+/* BACK BUTTON */
+
+#backBtn{
+
+    height:44px;
+
+    padding:0 18px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:
+    rgba(255,255,255,0.08);
+
+    color:white;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:
+    background .2s ease,
+    transform .2s ease;
+}
+
+#backBtn:hover{
+
+    background:
+    rgba(255,255,255,0.15);
+
+    transform:scale(1.04);
+}
+
+/* TOP ICON */
+
+#topIcon{
+
+    width:34px;
+    height:34px;
+
+    border-radius:10px;
+
+    background:white;
+
+    padding:4px;
+}
+
+/* INFO */
+
+#info{
+    display:flex;
+    flex-direction:column;
+}
+
+/* TOP TITLE */
+
+#title{
+
+    color:white;
+
+    font-size:16px;
+    font-weight:600;
+}
+
+/* URL */
+
+#url{
+
+    color:rgba(255,255,255,.55);
+
+    font-size:13px;
+
+    margin-top:2px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .card{
+        width:100%;
+        max-width:340px;
+    }
+
+    #topBar{
+        width:calc(100% - 18px);
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HOME -->
+
+<div id="home"></div>
+
+<!-- VIEWER -->
+
+<div id="viewer">
+
+    <div id="topBar">
+
+        <div id="leftSide">
+
+            <button id="backBtn"
+            onclick="goHome()">
+                ← Back
+            </button>
+
+            <img id="topIcon">
+
+            <div id="info">
+
+                <div id="title"></div>
+
+                <div id="url"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <iframe id="frame"
+    allowfullscreen></iframe>
+
+</div>
+
+<script>
+
+/* =========================
+   EASY LINK TABLE
+   =========================
+
+   JUST ADD MORE LIKE THIS:
+
+   {
+      name: "YouTube",
+      link: "https://youtube.com"
+   },
+
+========================= */
+
+const sites = [
+
+    {
+        name: "Streaming Sites",
+        link: "https://www.bestfreestreaming.org"
+    },
+    {
+        name: "Streaming Sites",
+        link: "https://hdtoday.sc/home"
+    }
+];
+
+/* ========================= */
+
+const home =
+document.getElementById("home");
+
+const viewer =
+document.getElementById("viewer");
+
+const frame =
+document.getElementById("frame");
+
+const topBar =
+document.getElementById("topBar");
+
+const title =
+document.getElementById("title");
+
+const urlText =
+document.getElementById("url");
+
+const topIcon =
+document.getElementById("topIcon");
+
+/* AUTO GENERATE CARDS */
+
+sites.forEach(site => {
+
+    const domain =
+    new URL(site.link).hostname;
+
+    const card =
+    document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+        <img
+        src="https://www.google.com/s2/favicons?sz=128&domain=${domain}">
+
+        <span>${site.name}</span>
+
+    `;
+
+    card.onclick = () => {
+
+        openSite(
+            site.link,
+            site.name,
+            domain
+        );
+
+    };
+
+    home.appendChild(card);
+
+});
+
+/* OPEN SITE */
+
+function openSite(url,name,domain){
+
+    frame.src = url;
+
+    title.textContent = name;
+
+    urlText.textContent = domain;
+
+    topIcon.src =
+    `https://www.google.com/s2/favicons?sz=128&domain=${domain}`;
+
+    home.style.opacity = "0";
+
+    home.style.transform = "scale(1.03)";
+
+    setTimeout(()=>{
+
+        home.style.display = "none";
+
+        viewer.classList.add("active");
+
+    },250);
+
+}
+
+/* GO HOME */
+
+function goHome(){
+
+    viewer.classList.remove("active");
+
+    topBar.classList.remove("show");
+
+    setTimeout(()=>{
+
+        frame.src = "";
+
+        home.style.display = "flex";
+
+        requestAnimationFrame(()=>{
+
+            home.style.opacity = "1";
+
+            home.style.transform = "scale(1)";
+
+        });
+
+    },250);
+
+}
+
+/* TOGGLE TOP BAR WITH M */
+
+document.addEventListener("keydown",(e)=>{
+
+    if(
+        e.key.toLowerCase() === "m" &&
+        viewer.classList.contains("active")
+    ){
+
+        topBar.classList.toggle("show");
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
